@@ -1,0 +1,14 @@
+################################################################################
+# Sophus source dir
+set( SophusDistributions_SOURCE_DIR "@CONFIG_SOURCE_DIR@")
+
+################################################################################
+# Sophus build dir
+set( SophusDistributions_DIR "@CONFIG_DIR@")
+
+################################################################################
+# Compute paths
+get_filename_component(SophusDistributions_CMAKE_DIR "${CMAKE_CURRENT_LIST_FILE}" PATH)
+
+set( SophusDistributions_INCLUDE_DIR  "@SophusDistributions_INCLUDE_DIR@" )
+set( SophusDistributions_INCLUDE_DIRS  "@SophusDistributions_INCLUDE_DIR@" )
