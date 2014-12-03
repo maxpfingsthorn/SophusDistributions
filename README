@@ -1,0 +1,3 @@
+Implementation of a normal distribution and a mixture distribution with corresponding operations on Lie groups implemented in Sophus.
+
+See headers for license.
