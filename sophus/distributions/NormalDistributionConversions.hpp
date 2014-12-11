@@ -43,7 +43,7 @@
 #pragma once
 
 //#include <ceres/jet.h>
-#include <sophus.hpp>
+#include <sophus/sophus.hpp>
 
 namespace NormalDistributionConversions {
 	

@@ -42,6 +42,7 @@
 
 #pragma once
 
+#include <boost/random.hpp>
 
 namespace Sophus {
 namespace Distributions {
@@ -50,17 +51,17 @@ template < typename Dist >
 class MixtureOfSample {
 public:
 	typedef typename Dist::Group Group;
-	typedef typename DistributionSampleTraits<Dist>::Sampler DistSampler;
+	typedef typename SampleTraits<Dist>::Sampler ComponentSampler;
 	
 	const MixtureOf<Dist>& distribution;
 	
-	boost::random::discrete_distribution<size_t, typename Dist::Scalar> rnd_dist;
-	std::vector< DistSampler* > comp_samplers;
+	boost::uniform_real<typename Dist::Scalar> rnd_real;
+	std::vector< ComponentSampler* > comp_samplers;
 	
-	MixtureOfSample( const MixtureOf<Dist>& d ) : distribution(d), rnd_dist( distribution.weights() ) {
+	MixtureOfSample( const MixtureOf<Dist>& d ) : distribution(d), rnd_real(0,1) {
 		for(size_t i=0; i<d.numComponents(); i++) {
 			comp_samplers.push_back( 
-					new DistSampler(d.component(i)) 
+					new ComponentSampler(d.component(i)) 
 			);
 		}
 	}
@@ -75,15 +76,22 @@ public:
 	
 	template < typename RNG >
 	Group operator() (RNG& rng) {
-		size_t comp = rnd_dist(rng);
-		return (*comp_samplers[comp])(rng);
+		typename Group::Scalar d = rnd_real(rng);
+		typename Group::Scalar prob = 0;
+		for(size_t i=0; i<distribution.numComponents(); i++) {
+			prob += distribution.weight(i);
+			if( d <= prob ) {
+				return (*comp_samplers[i])(rng);
+			}
+		}
+		return (*comp_samplers.back())(rng);
 	}
 };
 
 
 template < typename Dist >
-struct DistributionSampleTraits< MixtureOf<Dist> > {
-	static const bool supports_sampling = DistributionSampleTraits<Dist>::supports_sampling;
+struct SampleTraits< MixtureOf<Dist> > {
+	static const bool supports_sampling = SampleTraits<Dist>::supports_sampling;
 	
 	typedef MixtureOfSample<Dist> Sampler;
 };

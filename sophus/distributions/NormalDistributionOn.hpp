@@ -49,7 +49,7 @@
 #include <Eigen/Eigen>
 #include <Eigen/Geometry>
 
-#include <Distributions.hpp>
+#include "Distributions.hpp"
 
 namespace Sophus {
 namespace Distributions {

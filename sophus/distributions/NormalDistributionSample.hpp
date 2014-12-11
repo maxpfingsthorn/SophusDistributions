@@ -48,7 +48,7 @@
 
 #include <Eigen/Dense>
 
-#include <distributions/NormalDistributionOn.hpp>
+#include "NormalDistributionOn.hpp"
 
 namespace Sophus {
 namespace Distributions {

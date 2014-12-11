@@ -42,13 +42,18 @@
 
 #pragma once
 
+#include <cmath>
+#include <list>
+
 #include <Eigen/Eigenvalues>
 
 #include <boost/math/distributions/chi_squared.hpp>
-#include <distributions/NormalDistributionOn.hpp>
-#include <sophus.hpp>
 
-#include <cmath>
+#include <sophus/sophus.hpp>
+
+#include "NormalDistributionOn.hpp"
+
+
 
 namespace Sophus {
 namespace Distributions {
