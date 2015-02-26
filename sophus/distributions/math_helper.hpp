@@ -42,62 +42,24 @@
 
 #pragma once
 
-#include <boost/random.hpp>
-#include <boost/random/normal_distribution.hpp>
-
-#include "NormalDistributionOn.hpp"
-#include "math_helper.hpp"
+#include <Eigen/Dense>
 
 namespace Sophus {
 namespace Distributions {
+namespace math_helper {
 
+template < typename Derived1, typename Derived2 >
+inline bool matrix_square_root_svd(const Eigen::MatrixBase<Derived1>& in, Eigen::MatrixBase<Derived2>& out) {
+		typedef typename Eigen::JacobiSVD< Derived1, Eigen::NoQRPreconditioner > SVD;
 
-// randomly sample according to distribution
-template< typename LieGroup >
-class SamplerOfNormalDistributionOn {
-public:
-	typedef LieGroup Group;
-	typedef NormalDistributionOn<LieGroup> Distribution;
-	
-	const NormalDistributionOn<LieGroup>& N;
-	
-	boost::normal_distribution<typename LieGroup::Scalar> nd;
-	
-	
-	typename NormalDistributionOn<LieGroup>::Covariance sqrt_cov;
-	
-	SamplerOfNormalDistributionOn(const NormalDistributionOn<LieGroup>& n) : N(n), nd(0,1) {
-
-		math_helper::matrix_square_root_svd(n.covariance(), sqrt_cov);
-	}
-	
-	template < typename RNG >
-	Group operator() (RNG& rng) {
-		boost::variate_generator< RNG&, boost::normal_distribution<typename LieGroup::Scalar> > rnd_gen(rng, nd);
+		SVD svd( in , Eigen::ComputeFullU);
 		
-		typename Distribution::Tangent random;
-		
-		for( size_t i=0; i<Distribution::DoF; i++) {
-			random(i) = rnd_gen();
+		typename SVD::SingularValuesType sqrt_eigs = svd.singularValues();
+		for(size_t i=0; i<sqrt_eigs.innerSize(); i++) {
+			sqrt_eigs(i) = sqrt( sqrt_eigs(i) );
 		}
 		
-		typename Distribution::Tangent t = sqrt_cov * random;
-		
-		return N.mean() * Group::exp(t);
-	}	
-	
-};
-
-template < typename LieGroup >
-struct SampleTraits< NormalDistributionOn<LieGroup> > {
-	static const bool supports_sampling = true;
-	
-	typedef SamplerOfNormalDistributionOn<LieGroup> Sampler;
-};
-
-
-
-}
+		out = svd.matrixU() * sqrt_eigs.asDiagonal();
 }
 
-
+}}}

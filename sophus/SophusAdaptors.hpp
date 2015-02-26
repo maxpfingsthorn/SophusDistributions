@@ -56,6 +56,7 @@
 namespace Sophus {
 namespace Adaptors {
 
+
 template < typename Derived1, typename Derived2 >
 void convert_from_x_y_theta(const Eigen::MatrixBase<Derived1>& x_y_theta, Sophus::SE2GroupBase<Derived2>& g, Eigen::Matrix< typename Derived2::Scalar, Derived2::num_parameters, 3>& jacobian) {
 	Eigen::Matrix< typename Eigen::internal::traits<Derived1>::Scalar, Derived2::num_parameters, 1 > conv;
